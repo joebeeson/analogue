@@ -8,7 +8,7 @@ Renames, or "maps", helpers prior to rendering so that you can easily replace he
 
         $ cd /path/to/your/app/plugins && git clone git://github.com/joebeeson/analogue.git
 
-* Add the helper to your `AppController`
+* Add the helper to your `$helpers` and configure it there
 
         public $helpers = array(
            'Analogue' => array(
