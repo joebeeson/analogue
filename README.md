@@ -11,7 +11,7 @@ Renames, or "maps", helpers prior to rendering so that you can easily replace he
 * Add the helper to your `$helpers` and configure it there
 
         public $helpers = array(
-           'Analogue' => array(
+           'Analogue.Analogue' => array(
               array(
                'helper' => 'MyHtml',
                'rename' => 'Html'

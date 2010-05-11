@@ -18,9 +18,9 @@
 		/**
 		 * View
 		 * @var View
-		 * @access private
+		 * @access protected
 		 */
-		private $view;
+		protected $View;
 		
 		/**
 		 * Executed prior to rendering
@@ -28,51 +28,90 @@
 		 * @access public
 		 */
 		public function beforeRender() {
-			
-			// Loop through and call _mapHelper()
 			foreach ($this->mappings as $mapping) {
-				$this->_mapHelper($mapping);
+				extract($mapping);
+				if (isset($helper) and isset($rename)) {
+					$this->mapHelper($helper, $rename);
+				}
 			}
 		}
 		
 		/**
-		 * Construction
-		 * @param array $settings
+		 * Construction method.
+		 * @param array $mappings
 		 * @return null
 		 * @access public
 		 */
 		public function __construct($mappings = array()) {
 			
 			// Grab our View object for use later...
-			$this->view = ClassRegistry::getObject('view');
+			$this->View = ClassRegistry::getObject('view');
 			
 			// Merge our mappings together...
 			$this->mappings = am(
 				$this->mappings,
 				$mappings
 			);
+			
+			// Add ourself to the ClassRegistry in case anyone wants to use us
+			ClassRegistry::addObject('Analogue', $this);
+			
 		}
 		
 		/**
-		 * Performs the mapping of a helper object to a new name
-		 * @param array $mapping
-		 * @return null
-		 * @access private
+		 * Performs the mapping of a helper object to a new name. We return 
+		 * boolean to indicate success.
+		 * @param string $helper
+		 * @param string $rename
+		 * @return boolean
+		 * @access public
 		 */
-		private function _mapHelper($mapping = array()) {
+		public function mapHelper($helper, $rename) {
 			
-			// Helpers are always lowercased in the View object
-			$mapping = array_map('strtolower', $mapping);
-			
-			// Extract our array for use
-			extract($mapping);
+			// Make sure our helper is loaded, just in case...
+			$this->_loadHelper($helper);
 			
 			// Only continue if we have a valid, loaded helper
-			if (isset($helper)) {
-				if (isset($this->view->loaded[$helper]) and isset($rename)) {
-					$this->view->loaded[$rename] = $this->view->loaded[$helper];
-				}
+			if ($this->_isHelperLoaded($helper)) {
+				// Tell the View that it's loaded and ready it for usage...
+				$this->View->loaded[$rename] = $this->View->loaded[$helper];
+				$this->View->$rename = $this->View->loaded[$helper];
+				return true;
+			} else {
+				return false;
 			}
+			
+		}
+		
+		/**
+		 * Convenience method for checking if a helper is already loaded in our
+		 * View object. Returns boolean to indicate.
+		 * @param string $helper
+		 * @return boolean
+		 * @access protected
+		 */
+		protected function _isHelperLoaded($helper) {
+			return isset($this->View->loaded[$helper]);
+		}
+		
+		/**
+		 * Loads the requested $helper if it is not already. Returns a boolean
+		 * to indicate success.
+		 * @param string $helper
+		 * @return boolean
+		 * @access protected
+		 */
+		protected function _loadHelper($helper) {
+			if (!$this->_isHelperLoaded($helper)) {
+				$this->View->loaded = am(
+					$this->View->loaded,
+						$this->View->_loadHelpers(
+						$this->View->loaded,
+						array($helper)
+					)
+				);
+			}
+			return true;
 		}
 		
 	}
