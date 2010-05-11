@@ -37,12 +37,12 @@
 		}
 		
 		/**
-		 * Construction
-		 * @param array $settings
+		 * Construction method.
+		 * @param array $mappings
 		 * @return null
 		 * @access public
 		 */
-		public function __construct(&$mappings = array()) {
+		public function __construct($mappings = array()) {
 			
 			// Grab our View object for use later...
 			$this->View = ClassRegistry::getObject('view');
