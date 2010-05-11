@@ -73,7 +73,9 @@
 			
 			// Only continue if we have a valid, loaded helper
 			if ($this->_isHelperLoaded($helper)) {
-				$this->View->loaded[$rename] = $this->View->loaded[$helper];
+				// Tell the View that it's loaded and ready it for usage...
+				$this->View->loaded[strtolower($rename)] = $this->View->loaded[strtolower($helper)];
+				$this->View->$rename = $this->View->loaded[strtolower($helper)];
 				return true;
 			} else {
 				return false;
@@ -89,7 +91,7 @@
 		 * @access protected
 		 */
 		protected function _isHelperLoaded($helper) {
-			return isset($this->View->loaded[$helper]);
+			return isset($this->View->loaded[strtolower($helper)]);
 		}
 		
 		/**
@@ -101,7 +103,7 @@
 		 */
 		protected function _loadHelper($helper) {
 			if (!$this->_isHelperLoaded($helper)) {
-				return $this->View->_loadHelpers(
+				$this->View->_loadHelpers(
 					$this->View->loaded,
 					array($helper)
 				);
