@@ -71,19 +71,15 @@
 		 */
 		public function mapHelper($helper, $rename) {
 			
-			// Make sure our helper is loaded, just in case...
-			$this->_loadHelper($helper);
-			
 			// Only continue if we have a valid, loaded helper
-			if ($this->_isHelperLoaded($helper)) {
-				// Tell the View that it's loaded and ready it for usage...
-				$this->View->loaded[$rename] = $this->View->loaded[$helper];
-				$this->View->$rename = $this->View->loaded[$helper];
-				return true;
-			} else {
+			if (!$this->_loadHelper($helper)) {
 				return false;
 			}
-			
+
+			// Tell the View that it's loaded and ready it for usage...
+			$this->View->loaded[$rename] = $this->View->loaded[$helper];
+			$this->View->$rename = $this->View->loaded[$helper];
+			return true;
 		}
 		
 		/**
@@ -105,16 +101,17 @@
 		 * @access protected
 		 */
 		protected function _loadHelper($helper) {
-			if (!$this->_isHelperLoaded($helper)) {
-				$this->View->loaded = am(
-					$this->View->loaded,
-						$this->View->_loadHelpers(
-						$this->View->loaded,
-						array($helper)
-					)
-				);
+			if ($this->_isHelperLoaded($helper)) {
+				return true;
 			}
-			return true;
+			$this->View->loaded = am(
+				$this->View->loaded,
+					$this->View->_loadHelpers(
+					$this->View->loaded,
+					array($helper)
+				)
+			);
+			return $this->_isHelperLoaded($helper);
 		}
 		
 	}
