@@ -73,6 +73,10 @@
 			
 			// Only continue if we have a valid, loaded helper
 			if (!$this->_loadHelper($helper)) {
+				trigger_error(
+					sprintf(__('Analogue is unable to load helper %s', true), $helper),
+					E_USER_ERROR
+				);
 				return false;
 			}
 
