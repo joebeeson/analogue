@@ -71,8 +71,10 @@
 		 */
 		public function mapHelper($helper, $rename) {
 			
+			list($plugin, $name) = pluginSplit($helper, true);
+
 			// Only continue if we have a valid, loaded helper
-			if (!$this->_loadHelper($helper)) {
+			if (!$this->_loadHelper($name, $plugin)) {
 				trigger_error(
 					sprintf(__('Analogue is unable to load helper %s', true), $helper),
 					E_USER_ERROR
@@ -81,41 +83,42 @@
 			}
 
 			// Tell the View that it's loaded and ready it for usage...
-			$this->View->loaded[$rename] = $this->View->loaded[$helper];
-			$this->View->$rename = $this->View->loaded[$helper];
+			$this->View->loaded[$rename] = $this->View->loaded[$name];
+			$this->View->{$rename} = $this->View->loaded[$name];
 			return true;
 		}
 		
 		/**
 		 * Convenience method for checking if a helper is already loaded in our
 		 * View object. Returns boolean to indicate.
-		 * @param string $helper
+		 * @param string $name
 		 * @return boolean
 		 * @access protected
 		 */
-		protected function _isHelperLoaded($helper) {
-			return isset($this->View->loaded[$helper]);
+		protected function _isHelperLoaded($name) {
+			return isset($this->View->loaded[$name]);
 		}
 		
 		/**
 		 * Loads the requested $helper if it is not already. Returns a boolean
 		 * to indicate success.
-		 * @param string $helper
+		 * @param string $name
+		 * @param mixed $plugin string with dot at the end or null
 		 * @return boolean
 		 * @access protected
 		 */
-		protected function _loadHelper($helper) {
-			if ($this->_isHelperLoaded($helper)) {
+		protected function _loadHelper($name, $plugin = null) {
+			if ($this->_isHelperLoaded($name)) {
 				return true;
 			}
 			$this->View->loaded = am(
 				$this->View->loaded,
 					$this->View->_loadHelpers(
 					$this->View->loaded,
-					array($helper)
+					array($plugin . $name)
 				)
 			);
-			return $this->_isHelperLoaded($helper);
+			return $this->_isHelperLoaded($name);
 		}
 		
 	}
