@@ -34,6 +34,8 @@
 					$this->mapHelper($helper, $rename);
 				}
 			}
+
+			parent::beforeRender();
 		}
 		
 		/**
@@ -43,7 +45,8 @@
 		 * @access public
 		 */
 		public function __construct($mappings = array()) {
-			
+			parent::__construct();
+
 			// Grab our View object for use later...
 			$this->View = ClassRegistry::getObject('view');
 			
