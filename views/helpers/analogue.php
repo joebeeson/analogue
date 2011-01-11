@@ -61,7 +61,7 @@
 		/**
 		 * Performs the mapping of a helper object to a new name. We return 
 		 * boolean to indicate success.
-		 * @param string $helper
+		 * @param mixed $helper Helper name or array('Helper' => options)
 		 * @param string $rename
 		 * @return boolean
 		 * @access public
@@ -73,6 +73,8 @@
 			
 			// Only continue if we have a valid, loaded helper
 			if ($this->_isHelperLoaded($helper)) {
+				if(is_array($helper))
+					$helper = array_shift(array_keys($helper));
 				// Tell the View that it's loaded and ready it for usage...
 				$this->View->loaded[$rename] = $this->View->loaded[$helper];
 				$this->View->$rename = $this->View->loaded[$helper];
@@ -86,18 +88,20 @@
 		/**
 		 * Convenience method for checking if a helper is already loaded in our
 		 * View object. Returns boolean to indicate.
-		 * @param string $helper
+		 * @param mixed $helper Helper name or array('Helper' => options)
 		 * @return boolean
 		 * @access protected
 		 */
 		protected function _isHelperLoaded($helper) {
+			if(is_array($helper))
+				$helper = array_shift(array_keys($helper));
 			return isset($this->View->loaded[$helper]);
 		}
 		
 		/**
 		 * Loads the requested $helper if it is not already. Returns a boolean
 		 * to indicate success.
-		 * @param string $helper
+		 * @param mixed $helper Helper name or array('Helper' => options)
 		 * @return boolean
 		 * @access protected
 		 */
@@ -107,7 +111,7 @@
 					$this->View->loaded,
 						$this->View->_loadHelpers(
 						$this->View->loaded,
-						array($helper)
+						(array)$helper
 					)
 				);
 			}

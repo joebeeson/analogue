@@ -15,10 +15,16 @@ Renames, or "maps", helpers prior to rendering so that you can easily replace he
               array(
                'helper' => 'MyHtml',
                'rename' => 'Html'
-              ),array(
+              ),
+              array(
                'helper' => 'MyForm',
                'rename' => 'Form'
-              )
+              ),
+              // Options can be passed to helpers
+              array(
+               'helper' => array('MyPaginator' => array('ajax' => 'Ajax')),
+               'rename' => 'Paginator'
+              ),
           )
         );
 
